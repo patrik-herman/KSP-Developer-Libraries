@@ -1,8 +1,8 @@
 /*
 	by:			Patrik Herman
-	name:		dev_canvas, dev_intersect
-	requires:	dev_canvas
-	unpacks:	init    - .init()
+	name:		dev_canvas
+	requires:	none
+	unpacks:	init - .init()
 */
 SET_CONDITION(dev_canvas_init)
 define dev_canvas.MAX_OBJECTS := 30
@@ -43,23 +43,22 @@ macro dev_canvas.init(x, y, #width#, #height#)
 		declare cy
 	end family
 end macro
-function dev_canvas.updateObject(i)
-	dev_canvas.objects_labels[i] -> hide := HIDE_PART_NOTHING
-	dev_canvas.objects_labels[i] -> x := dev_canvas.offx + dev_canvas.objects[i, 0]
-	dev_canvas.objects_labels[i] -> y := dev_canvas.offy + dev_canvas.objects[i, 1]
-	dev_canvas.objects_labels[i] -> width := dev_canvas.objects[i, 2]
-	dev_canvas.objects_labels[i] -> height := dev_canvas.objects[i, 3]
+function dev_canvas.updateObject(objIndex)
+	dev_canvas.objects_labels[objIndex] -> hide := HIDE_PART_NOTHING
+	dev_canvas.objects_labels[objIndex] -> x := dev_canvas.offx + dev_canvas.objects[objIndex, 0]
+	dev_canvas.objects_labels[objIndex] -> y := dev_canvas.offy + dev_canvas.objects[objIndex, 1]
+	dev_canvas.objects_labels[objIndex] -> width := dev_canvas.objects[objIndex, 2]
+	dev_canvas.objects_labels[objIndex] -> height := dev_canvas.objects[objIndex, 3]
 end function
-function dev_canvas.addRect(x, y, w, h, pic)
+function dev_canvas.addRect(x, y, width, height, pic)
 	dev_canvas.objects[dev_canvas.objects.length, 0] := x
 	dev_canvas.objects[dev_canvas.objects.length, 1] := y
-	dev_canvas.objects[dev_canvas.objects.length, 2] := w
-	dev_canvas.objects[dev_canvas.objects.length, 3] := h
+	dev_canvas.objects[dev_canvas.objects.length, 2] := width
+	dev_canvas.objects[dev_canvas.objects.length, 3] := height
 	dev_canvas.objects[dev_canvas.objects.length, 4] := -1
 	dev_canvas.objects[dev_canvas.objects.length, 5] := -1
 	dev_canvas.objects_labels[dev_canvas.objects.length] -> picture := pic
 	dev_canvas.objects_labels[dev_canvas.objects.length] -> text := ""
-	//dev_canvas.objects_labels[dev_canvas.objects.length] -> hide := HIDE_PART_NOTHING
 	dev_canvas.updateObject(dev_canvas.objects.length)
 	inc(dev_canvas.objects.length)
 end function
