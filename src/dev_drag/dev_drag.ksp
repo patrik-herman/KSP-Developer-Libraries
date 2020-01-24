@@ -1,9 +1,9 @@
 /*
-	by:			Patrik Herman
-	name:		dev_drag
-	requires:	dev_canvas, dev_intersect
-	unpacks:	init - .init(),
-				outside - .control()
+    by:         Patrik Herman
+    name:       dev_drag
+    requires:   dev_canvas, dev_intersect
+    unpacks:    init - .init(),
+                outside - .control()
 */
 SET_CONDITION(dev_drag_init)
 
@@ -33,8 +33,8 @@ macro dev_drag.init()
 			declare ~xy_width_real := int_to_real(xy_width)
 			declare ~xy_height_real := int_to_real(xy_height)
 		move_control_px(?dev_drag_area, 160,30)
-		?dev_drag_area -> picture := "transparent"
-		?dev_drag_area -> z_layer := 1
+		?dev_drag_area -> picture := "dev_drag_transparent"
+		//?dev_drag_area -> z_layer := 1
 		?dev_drag_area[0] := 0.0
 		?dev_drag_area[1] := 1.0
 
@@ -44,7 +44,7 @@ macro dev_drag.init()
 		declare ~last_changed_y := ?dev_drag_area[1]
 		declare last_changed_time := ENGINE_UPTIME
 		declare timer_cooldown := 500
-		?dev_drag_area -> cursor_picture := "transparent_cursor"
+		?dev_drag_area -> cursor_picture := "dev_drag_transparent_cursor"
 
 	declare selection_start_x
 	declare selection_start_y
@@ -59,12 +59,12 @@ macro dev_drag.init()
 	declare ui_switch selection
 		selection -> width := 20
 		selection -> height := 20
-		selection -> picture := "bg"
+		selection -> picture := "dev_drag_bg"
 		selection -> x := dev_canvas.offx
 		selection -> y := dev_canvas.offy
 			selection -> width := dev_canvas.width
 			selection -> height := dev_canvas.height
-		selection -> z_layer := 0
+		//selection -> z_layer := 0
 		selection -> hide := HIDE_WHOLE_CONTROL
 			set_text(selection, "")
 
@@ -84,8 +84,6 @@ macro dev_drag.control()
 	on ui_control(dev_drag_area)
 		dev_canvas.cx := real_to_int(dev_drag_area[0]*xy_width_real)
 		dev_canvas.cy := real_to_int((1.0-dev_drag_area[1])*xy_height_real)
-
-		print_out_stats()
 
 		if(ENGINE_UPTIME - last_changed_time > timer_cooldown)
 			// reset all dragging variables
@@ -179,7 +177,6 @@ macro dev_drag.control()
 					end if
 				end for
 				last_changed_time := ENGINE_UPTIME
-				print_out_stats()
 				exit
 			end if
 
@@ -254,14 +251,12 @@ macro dev_drag.control()
 			end for
 		end if
 		
-		print_out_stats()
 		last_changed_time := ENGINE_UPTIME
 	end on
 end macro
 
 
 /*
-	
 	-------------
 	* FUNCTIONS *
 	-------------

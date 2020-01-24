@@ -1,0 +1,376 @@
+{ Compiled on Fri Jan 24 22:04:05 2020 }
+on init
+  declare $preproc_i
+  declare $i
+  declare $return
+  make_perfview
+  set_ui_height_px(200)
+  set_ui_color(2236962)
+  message("")
+  declare $dev_canvas__outline__thickness := 1
+  declare %dev_canvas__outlines[30]
+  declare ui_switch $dev_canvas__outlines0
+  declare ui_switch $dev_canvas__outlines1
+  declare ui_switch $dev_canvas__outlines2
+  declare ui_switch $dev_canvas__outlines3
+  declare ui_switch $dev_canvas__outlines4
+  declare ui_switch $dev_canvas__outlines5
+  declare ui_switch $dev_canvas__outlines6
+  declare ui_switch $dev_canvas__outlines7
+  declare ui_switch $dev_canvas__outlines8
+  declare ui_switch $dev_canvas__outlines9
+  declare ui_switch $dev_canvas__outlines10
+  declare ui_switch $dev_canvas__outlines11
+  declare ui_switch $dev_canvas__outlines12
+  declare ui_switch $dev_canvas__outlines13
+  declare ui_switch $dev_canvas__outlines14
+  declare ui_switch $dev_canvas__outlines15
+  declare ui_switch $dev_canvas__outlines16
+  declare ui_switch $dev_canvas__outlines17
+  declare ui_switch $dev_canvas__outlines18
+  declare ui_switch $dev_canvas__outlines19
+  declare ui_switch $dev_canvas__outlines20
+  declare ui_switch $dev_canvas__outlines21
+  declare ui_switch $dev_canvas__outlines22
+  declare ui_switch $dev_canvas__outlines23
+  declare ui_switch $dev_canvas__outlines24
+  declare ui_switch $dev_canvas__outlines25
+  declare ui_switch $dev_canvas__outlines26
+  declare ui_switch $dev_canvas__outlines27
+  declare ui_switch $dev_canvas__outlines28
+  declare ui_switch $dev_canvas__outlines29
+  $preproc_i := 0
+  while ($preproc_i<=29)
+    %dev_canvas__outlines[$preproc_i] := get_ui_id($dev_canvas__outlines0)+$preproc_i
+    inc($preproc_i)
+  end while
+  declare %dev_canvas__outlines_previous[30]
+  $i := 0
+  while ($i<30)
+    set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    set_control_par_str(%dev_canvas__outlines[$i],$CONTROL_PAR_PICTURE,"dev_drag_selection_outline")
+    set_control_par_str(%dev_canvas__outlines[$i],$CONTROL_PAR_TEXT,"")
+    inc($i)
+  end while
+  declare %dev_canvas___objects[180]
+  declare %dev_canvas__objects_labels[30]
+  declare ui_switch $dev_canvas__objects_labels0
+  declare ui_switch $dev_canvas__objects_labels1
+  declare ui_switch $dev_canvas__objects_labels2
+  declare ui_switch $dev_canvas__objects_labels3
+  declare ui_switch $dev_canvas__objects_labels4
+  declare ui_switch $dev_canvas__objects_labels5
+  declare ui_switch $dev_canvas__objects_labels6
+  declare ui_switch $dev_canvas__objects_labels7
+  declare ui_switch $dev_canvas__objects_labels8
+  declare ui_switch $dev_canvas__objects_labels9
+  declare ui_switch $dev_canvas__objects_labels10
+  declare ui_switch $dev_canvas__objects_labels11
+  declare ui_switch $dev_canvas__objects_labels12
+  declare ui_switch $dev_canvas__objects_labels13
+  declare ui_switch $dev_canvas__objects_labels14
+  declare ui_switch $dev_canvas__objects_labels15
+  declare ui_switch $dev_canvas__objects_labels16
+  declare ui_switch $dev_canvas__objects_labels17
+  declare ui_switch $dev_canvas__objects_labels18
+  declare ui_switch $dev_canvas__objects_labels19
+  declare ui_switch $dev_canvas__objects_labels20
+  declare ui_switch $dev_canvas__objects_labels21
+  declare ui_switch $dev_canvas__objects_labels22
+  declare ui_switch $dev_canvas__objects_labels23
+  declare ui_switch $dev_canvas__objects_labels24
+  declare ui_switch $dev_canvas__objects_labels25
+  declare ui_switch $dev_canvas__objects_labels26
+  declare ui_switch $dev_canvas__objects_labels27
+  declare ui_switch $dev_canvas__objects_labels28
+  declare ui_switch $dev_canvas__objects_labels29
+  $preproc_i := 0
+  while ($preproc_i<=29)
+    %dev_canvas__objects_labels[$preproc_i] := get_ui_id($dev_canvas__objects_labels0)+$preproc_i
+    inc($preproc_i)
+  end while
+  $i := 0
+  while ($i<30)
+    set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    inc($i)
+  end while
+  declare $dev_canvas__objects__length := 0
+  declare $dev_canvas__offx := 159
+  declare $dev_canvas__offy := 29
+  declare $dev_canvas__width := 200
+  declare $dev_canvas__height := 50
+  declare $dev_canvas__cx
+  declare $dev_canvas__cy
+  declare $dev_drag__drag__is_inside
+  declare $dev_drag__drag__dragging_len := 0
+  declare $dev_drag__drag__startx
+  declare $dev_drag__drag__starty
+  declare $dev_drag__drag__lockx
+  $dev_drag__drag__lockx := 0
+  declare $dev_drag__drag__locky
+  $dev_drag__drag__locky := 0
+  declare ui_xy ?dev_drag_area[2]
+  set_control_par(get_ui_id(?dev_drag_area),$CONTROL_PAR_MOUSE_MODE,2)
+  declare $xy_width := 150
+  declare $xy_height := 100
+  set_control_par(get_ui_id(?dev_drag_area),$CONTROL_PAR_WIDTH,$xy_width+12)
+  set_control_par(get_ui_id(?dev_drag_area),$CONTROL_PAR_HEIGHT,$xy_height+12)
+  declare ~xy_width_real
+  ~xy_width_real := int_to_real($xy_width)
+  declare ~xy_height_real
+  ~xy_height_real := int_to_real($xy_height)
+  move_control_px(?dev_drag_area,160,30)
+  set_control_par_str(get_ui_id(?dev_drag_area),$CONTROL_PAR_PICTURE,"dev_drag_transparent")
+  ?dev_drag_area[0] := 0.0
+  ?dev_drag_area[1] := 1.0
+  declare ~last_changed_x
+  ~last_changed_x := ?dev_drag_area[0]
+  declare ~last_changed_y
+  ~last_changed_y := ?dev_drag_area[1]
+  declare $last_changed_time
+  $last_changed_time := $ENGINE_UPTIME
+  declare $timer_cooldown := 500
+  set_control_par_str(get_ui_id(?dev_drag_area),$CONTROL_PAR_CURSOR_PICTURE,"dev_drag_transparent_cursor")
+  declare $selection_start_x
+  declare $selection_start_y
+  declare $selection_initiated
+  declare $selection_min_x
+  declare $selection_min_y
+  declare $selection_max_x
+  declare $selection_max_y
+  declare $selection_current_x
+  declare $selection_current_y
+  declare ui_switch $selection
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_WIDTH,20)
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_HEIGHT,20)
+  set_control_par_str(get_ui_id($selection),$CONTROL_PAR_PICTURE,"dev_drag_bg")
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_X,$dev_canvas__offx)
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_Y,$dev_canvas__offy)
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_WIDTH,$dev_canvas__width)
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_HEIGHT,$dev_canvas__height)
+  set_control_par(get_ui_id($selection),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_text($selection,"")
+  declare $selection_pos_x
+  $selection_pos_x := get_control_par(get_ui_id($selection),$CONTROL_PAR_POS_X)
+  declare $selection_pos_y
+  $selection_pos_y := get_control_par(get_ui_id($selection),$CONTROL_PAR_POS_Y)
+  declare $selection_calculated_width
+  declare $selection_calculated_height
+  %dev_canvas___objects[6*$dev_canvas__objects__length] := 10
+  %dev_canvas___objects[6*$dev_canvas__objects__length+1] := 10
+  %dev_canvas___objects[6*$dev_canvas__objects__length+2] := 30
+  %dev_canvas___objects[6*$dev_canvas__objects__length+3] := 20
+  %dev_canvas___objects[6*$dev_canvas__objects__length+4] := -1
+  %dev_canvas___objects[6*$dev_canvas__objects__length+5] := -1
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_PICTURE,"dev_canvas_bg_orange")
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_TEXT,"")
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$dev_canvas__objects__length])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$dev_canvas__objects__length+1])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$dev_canvas__objects__length+2])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$dev_canvas__objects__length+3])
+  inc($dev_canvas__objects__length)
+  %dev_canvas___objects[6*$dev_canvas__objects__length] := 60
+  %dev_canvas___objects[6*$dev_canvas__objects__length+1] := 20
+  %dev_canvas___objects[6*$dev_canvas__objects__length+2] := 30
+  %dev_canvas___objects[6*$dev_canvas__objects__length+3] := 40
+  %dev_canvas___objects[6*$dev_canvas__objects__length+4] := -1
+  %dev_canvas___objects[6*$dev_canvas__objects__length+5] := -1
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_PICTURE,"dev_canvas_bg_aqua")
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_TEXT,"")
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$dev_canvas__objects__length])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$dev_canvas__objects__length+1])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$dev_canvas__objects__length+2])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$dev_canvas__objects__length+3])
+  inc($dev_canvas__objects__length)
+  declare ui_switch $addrect
+  declare ui_switch $lockx
+  make_persistent($lockx)
+  declare ui_switch $locky
+  make_persistent($locky)
+  declare %_dev_intersect_c[4]
+end on
+
+on ui_control($addrect)
+  $addrect := 0
+  %dev_canvas___objects[6*$dev_canvas__objects__length] := 40
+  %dev_canvas___objects[6*$dev_canvas__objects__length+1] := 40
+  %dev_canvas___objects[6*$dev_canvas__objects__length+2] := 30
+  %dev_canvas___objects[6*$dev_canvas__objects__length+3] := 6
+  %dev_canvas___objects[6*$dev_canvas__objects__length+4] := -1
+  %dev_canvas___objects[6*$dev_canvas__objects__length+5] := -1
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_PICTURE,"dev_canvas_bg_orange")
+  set_control_par_str(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_TEXT,"")
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$dev_canvas__objects__length])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$dev_canvas__objects__length+1])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$dev_canvas__objects__length+2])
+  set_control_par(%dev_canvas__objects_labels[$dev_canvas__objects__length],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$dev_canvas__objects__length+3])
+  inc($dev_canvas__objects__length)
+end on
+
+on ui_control($lockx)
+  $dev_drag__drag__lockx := $lockx
+end on
+
+on ui_control($locky)
+  $dev_drag__drag__locky := $locky
+end on
+
+on ui_control(?dev_drag_area)
+  $dev_canvas__cx := real_to_int(?dev_drag_area[0]*~xy_width_real)
+  $dev_canvas__cy := real_to_int((1.0-?dev_drag_area[1])*~xy_height_real)
+  if ($ENGINE_UPTIME-$last_changed_time>$timer_cooldown)
+    $dev_drag__drag__is_inside := 0
+    $dev_drag__drag__dragging_len := 0
+    $dev_drag__drag__startx := -1
+    $dev_drag__drag__starty := -1
+    $i := 0
+    while ($i<$dev_canvas__objects__length)
+      if (%dev_canvas___objects[6*$i]<$dev_canvas__cx and (%dev_canvas___objects[6*$i+1]<$dev_canvas__cy) and ($dev_canvas__cx<(%dev_canvas___objects[6*$i]+%dev_canvas___objects[6*$i+2])) and ($dev_canvas__cy<(%dev_canvas___objects[6*$i+1]+%dev_canvas___objects[6*$i+3])))
+        $dev_drag__drag__is_inside := 1
+        inc($dev_drag__drag__dragging_len)
+        $dev_drag__drag__startx := $dev_canvas__cx
+        $dev_drag__drag__starty := $dev_canvas__cy
+        %dev_canvas___objects[6*$i+4] := %dev_canvas___objects[6*$i]
+        %dev_canvas___objects[6*$i+5] := %dev_canvas___objects[6*$i+1]
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$i]-$dev_canvas__outline__thickness)
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$i+1]-$dev_canvas__outline__thickness)
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$i+2]+($dev_canvas__outline__thickness*2))
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$i+3]+($dev_canvas__outline__thickness*2))
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE,1)
+        %dev_canvas__outlines_previous[$i] := 1
+      else
+        if (get_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE)=0)
+          %dev_canvas___objects[6*$i+4] := -1
+          %dev_canvas___objects[6*$i+5] := -1
+        else
+          if (%dev_canvas___objects[6*$i+4]>-1)
+            %dev_canvas___objects[6*$i+4] := %dev_canvas___objects[6*$i]
+            %dev_canvas___objects[6*$i+5] := %dev_canvas___objects[6*$i+1]
+          end if
+        end if
+      end if
+      inc($i)
+    end while
+    if ($dev_drag__drag__is_inside=0)
+      $selection_start_x := $dev_canvas__cx
+      $selection_start_y := $dev_canvas__cy
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_X,$selection_pos_x+$selection_start_x)
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_Y,$selection_pos_y+$selection_start_y)
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_WIDTH,0)
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_HEIGHT,0)
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      $selection_initiated := 0
+      $dev_drag__drag__dragging_len := 0
+      $dev_drag__drag__startx := -1
+      $dev_drag__drag__starty := -1
+      set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE,0)
+      %dev_canvas__outlines_previous[$i] := 0
+    else
+      set_control_par(get_ui_id($selection),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      $selection_initiated := 0
+      set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE,0)
+    end if
+  else
+    if ($dev_drag__drag__dragging_len>0)
+      $i := 0
+      while ($i<$dev_canvas__objects__length)
+        if (%dev_canvas___objects[6*$i+4]>-1)
+          if ($dev_drag__drag__lockx=0)
+            %dev_canvas___objects[6*$i] := %dev_canvas___objects[6*$i+4]+($dev_canvas__cx-$dev_drag__drag__startx)
+          end if
+          if ($dev_drag__drag__locky=0)
+            %dev_canvas___objects[6*$i+1] := %dev_canvas___objects[6*$i+5]+($dev_canvas__cy-$dev_drag__drag__starty)
+          end if
+          set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+          set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$i])
+          set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$i+1])
+          set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$i+2])
+          set_control_par(%dev_canvas__objects_labels[$i],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$i+3])
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$i]-$dev_canvas__outline__thickness)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$i+1]-$dev_canvas__outline__thickness)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$i+2]+($dev_canvas__outline__thickness*2))
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$i+3]+($dev_canvas__outline__thickness*2))
+        end if
+        inc($i)
+      end while
+      $last_changed_time := $ENGINE_UPTIME
+      exit
+    end if
+    $selection_current_x := 7+real_to_int(?dev_drag_area[0]*~xy_width_real)
+    $selection_current_y := 7+real_to_int((1.0-?dev_drag_area[1])*~xy_height_real)
+    if ($selection_start_x<$selection_current_x)
+      $selection_min_x := $selection_start_x
+      $selection_max_x := $selection_current_x
+    else
+      $selection_min_x := $selection_current_x
+      $selection_max_x := $selection_start_x
+    end if
+    if ($selection_start_y<$selection_current_y)
+      $selection_min_y := $selection_start_y
+      $selection_max_y := $selection_current_y
+    else
+      $selection_min_y := $selection_current_y
+      $selection_max_y := $selection_start_y
+    end if
+    $selection_calculated_width := $selection_max_x-$selection_min_x
+    $selection_calculated_height := $selection_max_y-$selection_min_y
+    set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_X,$selection_pos_x+$selection_min_x)
+    set_control_par(get_ui_id($selection),$CONTROL_PAR_POS_Y,$selection_pos_y+$selection_min_y)
+    set_control_par(get_ui_id($selection),$CONTROL_PAR_WIDTH,$selection_calculated_width)
+    set_control_par(get_ui_id($selection),$CONTROL_PAR_HEIGHT,$selection_calculated_height)
+    if ($selection_initiated=0)
+      if ($selection_calculated_width>10 and ($selection_calculated_height>10))
+        set_control_par(get_ui_id($selection),$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+        $selection_initiated := 1
+      end if
+    end if
+    $i := 0
+    while ($i<$dev_canvas__objects__length)
+      %_dev_intersect_c[0] := 0
+      %_dev_intersect_c[1] := 0
+      %_dev_intersect_c[2] := 0
+      %_dev_intersect_c[3] := 0
+      if (%dev_canvas___objects[6*$i]>($selection_calculated_width+$selection_min_x))
+        %_dev_intersect_c[0] := 1
+      end if
+      if (%dev_canvas___objects[6*$i+2]+%dev_canvas___objects[6*$i]<$selection_min_x)
+        %_dev_intersect_c[1] := 1
+      end if
+      if (%dev_canvas___objects[6*$i+1]>($selection_calculated_height+$selection_min_y))
+        %_dev_intersect_c[2] := 1
+      end if
+      if (%dev_canvas___objects[6*$i+3]+%dev_canvas___objects[6*$i+1]<$selection_min_y)
+        %_dev_intersect_c[3] := 1
+      end if
+      $return := 1-(%_dev_intersect_c[0] .or. %_dev_intersect_c[1] .or. %_dev_intersect_c[2] .or. %_dev_intersect_c[3])
+      if ($return=1)
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE,1)
+      else
+        set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE,0)
+      end if
+      if (get_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE) # %dev_canvas__outlines_previous[$i])
+        if (get_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE)=0)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+        else
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_X,$dev_canvas__offx+%dev_canvas___objects[6*$i]-$dev_canvas__outline__thickness)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_POS_Y,$dev_canvas__offy+%dev_canvas___objects[6*$i+1]-$dev_canvas__outline__thickness)
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_WIDTH,%dev_canvas___objects[6*$i+2]+($dev_canvas__outline__thickness*2))
+          set_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_HEIGHT,%dev_canvas___objects[6*$i+3]+($dev_canvas__outline__thickness*2))
+          %dev_canvas___objects[6*$i+4] := %dev_canvas___objects[6*$i]
+          %dev_canvas___objects[6*$i+5] := %dev_canvas___objects[6*$i+1]
+        end if
+      end if
+      %dev_canvas__outlines_previous[$i] := get_control_par(%dev_canvas__outlines[$i],$CONTROL_PAR_VALUE)
+      inc($i)
+    end while
+  end if
+  $last_changed_time := $ENGINE_UPTIME
+end on
+

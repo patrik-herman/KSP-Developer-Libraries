@@ -1,0 +1,40 @@
+{#pragma save_compiled_source dev_test1.txt }
+
+import "../../../../src/dev_intersect/dev_intersect.ksp"
+import "../../../../src/dev_drag/dev_drag.ksp"
+import "../../../../src/dev_canvas/dev_canvas.ksp"
+
+on init
+	declare i
+	declare j
+	declare const TRUE := 1
+	declare const FALSE := 0
+	declare return
+	make_perfview
+	set_ui_height_px(200)
+	set_ui_color(9222222h)
+	message("")
+
+	dev_canvas.init(159,29,200,50)
+	dev_drag.init()
+
+	dev_canvas.addRect(10, 10, 30, 20, "dev_canvas_bg_orange")
+	dev_canvas.addRect(60, 20, 30, 40, "dev_canvas_bg_aqua")
+
+	declare ui_switch addrect
+	declare pers ui_switch lockx
+	declare pers ui_switch locky
+end on
+on ui_control(addrect)
+	addrect := 0
+	dev_canvas.addRect(40,40,30,6, "dev_canvas_bg_orange")
+end on
+on ui_control(lockx)
+	dev_drag.drag.lockx := lockx
+end on
+on ui_control(locky)
+	dev_drag.drag.locky := locky
+end on
+
+
+dev_drag.control()

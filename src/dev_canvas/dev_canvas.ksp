@@ -1,8 +1,8 @@
 /*
-	by:			Patrik Herman
-	name:		dev_canvas
-	requires:	none
-	unpacks:	init - .init()
+    by:         Patrik Herman
+    name:       dev_canvas
+    requires:   none
+    unpacks:    init - .init()
 */
 SET_CONDITION(dev_canvas_init)
 define dev_canvas.MAX_OBJECTS := 30
@@ -21,7 +21,7 @@ macro dev_canvas.init(x, y, #width#, #height#)
 			declare outlines_previous[dev_canvas.MAX_OBJECTS]
 			for i := 0 to dev_canvas.MAX_OBJECTS-1
 				dev_canvas.outlines[i] -> hide := HIDE_WHOLE_CONTROL
-				dev_canvas.outlines[i] -> picture := "selection_outline"
+				dev_canvas.outlines[i] -> picture := "dev_drag_selection_outline"
 				dev_canvas.outlines[i] -> text := ""
 			end for
 		END_USE_CODE

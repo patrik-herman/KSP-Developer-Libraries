@@ -1,8 +1,8 @@
 /*
-	by:			Patrik Herman
-	name:		dev_intersect
-	requires:	none
-	unpacks:	none
+    by:         Patrik Herman
+    name:       dev_intersect
+    requires:   none
+    unpacks:    none
 */
 
 function dev_intersect.rectangles(r1left, r1top, r1width, r1height, r2left, r2top, r2width, r2height) -> result
