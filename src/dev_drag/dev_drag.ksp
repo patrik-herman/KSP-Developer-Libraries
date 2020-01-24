@@ -1,0 +1,307 @@
+/*
+	by:			Patrik Herman
+	name:		dev_drag
+	requires:	dev_canvas, dev_intersect
+	unpacks:	init    - .init(),
+				outside - .control()
+*/
+SET_CONDITION(dev_drag_init)
+
+// Initializes script.
+macro dev_drag.init()
+	family dev_drag
+		family drag
+			declare is_inside
+
+			declare dragging_len := 0
+			declare startx
+			declare starty
+
+			declare lockx := FALSE
+			declare locky := FALSE
+		end family
+	end family
+
+	declare ui_xy ?area[2]
+		?area -> mouse_mode := 2
+		declare xy_width := 150
+		declare xy_height := 100
+			?area -> width := xy_width+12
+			?area -> height := xy_height+12
+			declare pad_x
+			declare pad_y
+			declare ~xy_width_real := int_to_real(xy_width)
+			declare ~xy_height_real := int_to_real(xy_height)
+		move_control_px(?area, 160,30)
+		?area -> picture := "transparent"
+		?area -> z_layer := 1
+		?area[0] := 0.0
+		?area[1] := 1.0
+
+		// now comes the stuff for seleection
+		// last changed values etc
+		declare ~last_changed_x := ?area[0]
+		declare ~last_changed_y := ?area[1]
+		declare last_changed_time := ENGINE_UPTIME
+		declare timer_cooldown := 500
+		?area -> cursor_picture := "transparent_cursor"
+end macro
+
+// Initializes variables necessary for selection box
+macro dev_drag.initSelection()
+	declare selection_start_x
+	declare selection_start_y
+	declare selection_initiated
+	declare selection_min_x
+	declare selection_min_y
+	declare selection_max_x
+	declare selection_max_y
+	declare selection_current_x
+	declare selection_current_y
+
+	declare ui_switch selection
+		selection -> width := 20
+		selection -> height := 20
+		selection -> picture := "bg"
+		selection -> x := dev_canvas.offx
+		selection -> y := dev_canvas.offy
+			selection -> width := dev_canvas.width
+			selection -> height := dev_canvas.height
+		selection -> z_layer := 0
+		selection -> hide := HIDE_WHOLE_CONTROL
+			set_text(selection, "")
+
+		declare selection_pos_x := selection -> x
+		declare selection_pos_y := selection -> y
+		declare selection_calculated_width
+		declare selection_calculated_height
+end macro
+
+/*
+	-----------
+	* CONTROL *
+	-----------
+*/
+
+macro dev_drag.control()
+	on ui_control(area)
+		dev_canvas.cx := real_to_int(area[0]*xy_width_real)
+		dev_canvas.cy := real_to_int((1.0-area[1])*xy_height_real)
+
+		print_out_stats()
+
+		if(ENGINE_UPTIME - last_changed_time > timer_cooldown)
+			// reset all dragging variables
+			dev_drag.drag.is_inside := FALSE
+			dev_drag.drag.dragging_len := 0
+			dev_drag.drag.startx := -1
+			dev_drag.drag.starty := -1
+
+			// now check if it's inside any object
+			for i := 0 to dev_canvas.objects.length-1
+				if (dev_canvas.objects[i,0] < dev_canvas.cx and dev_canvas.objects[i,1] < dev_canvas.cy ...
+						and dev_canvas.cx < dev_canvas.objects[i,0]+dev_canvas.objects[i,2] ...
+						and dev_canvas.cy < dev_canvas.objects[i,1]+dev_canvas.objects[i,3])
+					dev_drag.drag.is_inside := TRUE
+
+					// set up variables for dragging
+					inc(dev_drag.drag.dragging_len)
+					dev_drag.drag.startx := dev_canvas.cx
+					dev_drag.drag.starty := dev_canvas.cy
+
+					// save the object's position once dragging starts
+					// so we can then calculate the new position
+					dev_canvas.objects[i, 4] := dev_canvas.objects[i, 0]
+					dev_canvas.objects[i, 5] := dev_canvas.objects[i, 1]
+
+					dev_drag.showOutline(i)
+					dev_drag.drawOutline(i)
+					dev_canvas.outlines[i] -> value := 1
+					dev_canvas.outlines_previous[i] := 1
+
+				else if (dev_canvas.outlines[i] -> value = 0) // if the cursor is outside the object, just reset it
+					// plus the object must NOT be selected to be reset
+					dev_canvas.objects[i, 4] := -1
+					dev_canvas.objects[i, 5] := -1
+				else if (dev_canvas.objects[i, 4] > -1)
+					dev_canvas.objects[i, 4] := dev_canvas.objects[i, 0]
+					dev_canvas.objects[i, 5] := dev_canvas.objects[i, 1]
+				end if
+			end for
+
+			if (dev_drag.drag.is_inside = FALSE)
+				selection_start_x := dev_canvas.cx
+				selection_start_y := dev_canvas.cy
+				selection -> x := selection_pos_x + selection_start_x
+				selection -> y := selection_pos_y + selection_start_y
+				selection -> width := 0
+				selection -> height := 0
+				selection -> hide := HIDE_WHOLE_CONTROL
+				//dev_drag.hideOutlines()
+				selection_initiated := FALSE
+
+				dev_drag.drag.dragging_len := 0
+				dev_drag.drag.startx := -1
+				dev_drag.drag.starty := -1
+
+				dev_drag.hideOutline(i)
+				//dev_canvas.outlines_previous[i] := dev_canvas.outlines[i] -> value
+				dev_canvas.outlines[i] -> value := 0
+				dev_canvas.outlines_previous[i] := 0
+
+				//dev_drag.hideOutline(i)
+				//dev_canvas.outlines[i] -> value := 0
+			else
+				// we also have to make sure the selection and outline disappear
+				selection -> hide := HIDE_WHOLE_CONTROL
+				selection_initiated := FALSE
+				//dev_drag.hideOutlines()
+
+				//dev_canvas.outlines[] -> hide := HIDE_WHOLE_CONTROL
+
+				dev_drag.hideOutline(i)
+				dev_canvas.outlines[i] -> value := 0
+			end if
+
+			
+		else
+			// if there's at least one object to drag
+			if (dev_drag.drag.dragging_len > 0)
+				for i := 0 to dev_canvas.objects.length-1
+					// dev_canvas.object at id = 4 is the selection
+					if (dev_canvas.objects[i,4] > -1)
+						// now calculate the drag distance
+						if (dev_drag.drag.lockx = FALSE)
+							dev_canvas.objects[i,0] := dev_canvas.objects[i,4]+ (dev_canvas.cx - dev_drag.drag.startx)
+						end if
+						if (dev_drag.drag.locky = FALSE)
+							dev_canvas.objects[i,1] := dev_canvas.objects[i,5]+ (dev_canvas.cy - dev_drag.drag.starty)
+						end if
+						dev_canvas.updateObject(i)
+						dev_drag.drawOutline(i)
+					end if
+				end for
+				last_changed_time := ENGINE_UPTIME
+				print_out_stats()
+				exit
+			end if
+
+			selection_current_x := 7+real_to_int(area[0]*xy_width_real)
+			selection_current_y := 7+real_to_int((1.0-area[1])*xy_height_real)
+
+			// get the minimum and maximum values for selection x and y
+			if (selection_start_x < selection_current_x)
+				selection_min_x := selection_start_x
+				selection_max_x := selection_current_x
+			else
+				selection_min_x := selection_current_x
+				selection_max_x := selection_start_x
+			end if
+			if (selection_start_y < selection_current_y)
+				selection_min_y := selection_start_y
+				selection_max_y := selection_current_y
+			else
+				selection_min_y := selection_current_y
+				selection_max_y := selection_start_y
+			end if
+
+			selection_calculated_width := selection_max_x-selection_min_x
+			selection_calculated_height := selection_max_y-selection_min_y
+
+			selection -> x := selection_pos_x + selection_min_x
+			selection -> y := selection_pos_y + selection_min_y
+			selection -> width := selection_calculated_width
+			selection -> height := selection_calculated_height
+			/*for i := 0 to dev_canvas.objects.length-1
+				// if the outline of an object is turned on
+				if (dev_canvas.outlines[i] -> value = 1)
+					dev_drag.drawOutline(i)
+				end if
+			end for*/
+			if (selection_initiated = FALSE)
+				if (selection_calculated_width > 10 and selection_calculated_height > 10)
+					selection -> hide := HIDE_PART_NOTHING
+					selection_initiated := TRUE
+				end if
+			end if
+
+			// cycle through all rectangles and check which one needs to have an overlay
+			//set_text(debug, "")
+			for i := 0 to dev_canvas.objects.length-1
+				return := dev_intersect.rectangles( ...
+					selection_min_y,selection_min_x, ...
+					selection_calculated_width,selection_calculated_height, ...
+					dev_canvas.objects[i, 1],dev_canvas.objects[i, 0], ...
+					dev_canvas.objects[i, 2],dev_canvas.objects[i, 3])
+
+				if (return = TRUE)
+					dev_canvas.outlines[i] -> value := 1
+				else
+					dev_canvas.outlines[i] -> value := 0
+				end if
+
+				// this is purely for optimization reasons
+				// if the number hasn't changed, just don't do anything really
+				if (dev_canvas.outlines[i] -> value # dev_canvas.outlines_previous[i])
+					if (dev_canvas.outlines[i] -> value = 0)
+						dev_drag.hideOutline(i)
+					else
+						dev_drag.showOutline(i)
+						dev_drag.drawOutline(i)
+
+						dev_canvas.objects[i, 4] := dev_canvas.objects[i, 0]
+						dev_canvas.objects[i, 5] := dev_canvas.objects[i, 1]
+					end if
+				end if
+				dev_canvas.outlines_previous[i] := dev_canvas.outlines[i] -> value
+			end for
+		end if
+		
+		print_out_stats()
+		last_changed_time := ENGINE_UPTIME
+	end on
+end macro
+
+
+/*
+	
+	-------------
+	* FUNCTIONS *
+	-------------
+*/
+
+// Makes outline visible around an object.
+function dev_drag.drawOutline(objIndex)
+	dev_canvas.outlines[objIndex] -> x := dev_canvas.offx + dev_canvas.objects[objIndex, 0] - dev_canvas.outline.thickness
+	dev_canvas.outlines[objIndex] -> y := dev_canvas.offy + dev_canvas.objects[objIndex, 1] - dev_canvas.outline.thickness
+	dev_canvas.outlines[objIndex] -> width :=               dev_canvas.objects[objIndex, 2] + dev_canvas.outline.thickness*2
+	dev_canvas.outlines[objIndex] -> height :=              dev_canvas.objects[objIndex, 3] + dev_canvas.outline.thickness*2
+end function
+
+// Hides all outlines.
+function dev_drag.hideOutlines()
+	for i := 0 to dev_canvas.objects.length-1
+		dev_canvas.outlines[i] -> hide := HIDE_WHOLE_CONTROL
+	end for
+end function
+
+// Shows object's outline.
+function dev_drag.showOutline(objIndex)
+	dev_canvas.outlines[objIndex] -> hide := HIDE_PART_NOTHING
+end function
+
+// Hides object's outline.
+function dev_drag.hideOutline(objIndex)
+	dev_canvas.outlines[objIndex] -> hide := HIDE_WHOLE_CONTROL
+end function
+
+// Hides/shows outlines according to the state of objects.
+/*function dev_drag.updateOutlines()
+	for i := 0 to dev_canvas.objects.length-1
+		if (dev_canvas.objects[i, 4] = -1)
+			dev_canvas.outlines[i] -> hide := HIDE_WHOLE_CONTROL
+		else
+			dev_canvas.outlines[i] -> hide := HIDE_PART_NOTHING
+		end if
+	end for
+end function*/

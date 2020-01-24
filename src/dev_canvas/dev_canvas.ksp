@@ -1,0 +1,74 @@
+/*
+	by:			Patrik Herman
+	name:		dev_canvas, dev_intersect
+	requires:	dev_canvas
+	unpacks:	init    - .init()
+*/
+SET_CONDITION(dev_canvas_init)
+define dev_canvas.MAX_OBJECTS := 30
+
+macro dev_canvas.init(x, y, #width#, #height#)
+	family dev_canvas
+		USE_CODE_IF(dev_drag_init)
+			family outline
+				declare thickness := 1
+				declare selected_number
+				declare selected_number_previous
+			end family
+
+			// outlines for objects
+			declare ui_switch outlines[dev_canvas.MAX_OBJECTS]
+			declare outlines_previous[dev_canvas.MAX_OBJECTS]
+			for i := 0 to dev_canvas.MAX_OBJECTS-1
+				dev_canvas.outlines[i] -> hide := HIDE_WHOLE_CONTROL
+				dev_canvas.outlines[i] -> picture := "selection_outline"
+				dev_canvas.outlines[i] -> text := ""
+			end for
+		END_USE_CODE
+
+		declare objects[dev_canvas.MAX_OBJECTS, 6] // x,y,w,h,startX,startY
+		declare ui_switch objects_labels[dev_canvas.MAX_OBJECTS]
+			for i := 0 to dev_canvas.MAX_OBJECTS-1
+				dev_canvas.objects_labels[i] -> hide := HIDE_WHOLE_CONTROL
+			end for
+		family objects
+			declare length := 0
+			declare !pictures[dev_canvas.MAX_OBJECTS]
+		end family
+		declare offx := x
+		declare offy := y
+		declare width := #width#
+		declare height := #height#
+		declare cx
+		declare cy
+	end family
+end macro
+function dev_canvas.updateObject(i)
+	dev_canvas.objects_labels[i] -> hide := HIDE_PART_NOTHING
+	dev_canvas.objects_labels[i] -> x := dev_canvas.offx + dev_canvas.objects[i, 0]
+	dev_canvas.objects_labels[i] -> y := dev_canvas.offy + dev_canvas.objects[i, 1]
+	dev_canvas.objects_labels[i] -> width := dev_canvas.objects[i, 2]
+	dev_canvas.objects_labels[i] -> height := dev_canvas.objects[i, 3]
+end function
+function dev_canvas.addRect(x, y, w, h, pic)
+	dev_canvas.objects[dev_canvas.objects.length, 0] := x
+	dev_canvas.objects[dev_canvas.objects.length, 1] := y
+	dev_canvas.objects[dev_canvas.objects.length, 2] := w
+	dev_canvas.objects[dev_canvas.objects.length, 3] := h
+	dev_canvas.objects[dev_canvas.objects.length, 4] := -1
+	dev_canvas.objects[dev_canvas.objects.length, 5] := -1
+	dev_canvas.objects_labels[dev_canvas.objects.length] -> picture := pic
+	dev_canvas.objects_labels[dev_canvas.objects.length] -> text := ""
+	//dev_canvas.objects_labels[dev_canvas.objects.length] -> hide := HIDE_PART_NOTHING
+	dev_canvas.updateObject(dev_canvas.objects.length)
+	inc(dev_canvas.objects.length)
+end function
+function dev_canvas.reload()
+	for i := 0 to dev_canvas.objects.length-1
+		dev_canvas.objects_labels[i] -> hide := HIDE_PART_NOTHING
+		dev_canvas.objects_labels[i] -> x := dev_canvas.offx + dev_canvas.objects[i, 0]
+		dev_canvas.objects_labels[i] -> y := dev_canvas.offy + dev_canvas.objects[i, 1]
+		dev_canvas.objects_labels[i] -> width := dev_canvas.objects[i, 2]
+		dev_canvas.objects_labels[i] -> height := dev_canvas.objects[i, 3]
+	end for
+end function

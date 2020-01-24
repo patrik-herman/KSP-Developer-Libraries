@@ -1,0 +1,27 @@
+/*
+	by:			Patrik Herman
+	name:		dev_intersect
+	requires:	none
+	unpacks:	none
+*/
+
+function dev_intersect.rectangles(r1top,r1left,r1right,r1bottom,r2top,r2left,r2right,r2bottom) -> result
+	declare dev_intersect_c[4]
+	dev_intersect_c[0] := 0
+	dev_intersect_c[1] := 0
+	dev_intersect_c[2] := 0
+	dev_intersect_c[3] := 0
+	if (r2left > r1right+r1left)
+		dev_intersect_c[0] := 1
+	end if
+	if (r2right+r2left < r1left)
+		dev_intersect_c[1] := 1
+	end if
+	if (r2top > r1bottom+r1top)
+		dev_intersect_c[2] := 1
+	end if
+	if (r2bottom+r2top < r1top)
+		dev_intersect_c[3] := 1
+	end if
+	result := 1-(dev_intersect_c[0] .or. dev_intersect_c[1] .or. dev_intersect_c[2] .or. dev_intersect_c[3])
+end function
